@@ -451,10 +451,14 @@
 
     async function loadPdfFromUrl(url) {
       workspace.innerHTML = '<div id="loadingBox">PDF wird geladen …</div>';
-      pdfDoc = await pdfjsLib.getDocument(url).promise;
-      pageCount = pdfDoc.numPages;
-      await renderPdfPages();
-      renderAllFields();
+
+      const pdfResponse = await fetch(url, { cache: 'no-store' });
+      if (!pdfResponse.ok) {
+        throw new Error('PDF nicht gefunden oder nicht lesbar: ' + url + ' / Status: ' + pdfResponse.status);
+      }
+
+      const arrayBuffer = await pdfResponse.arrayBuffer();
+      await loadPdfFromData(arrayBuffer);
     }
 
     async function renderPdfPages() {
@@ -769,7 +773,7 @@
         updateSelectedInfo();
       } catch (error) {
         console.error(error);
-        alert('Prüfung konnte nicht geladen werden. Prüfe: exams/' + examName + '/exam.pdf und config.json');
+        alert('Prüfung konnte nicht geladen werden. Details: ' + error.message);
       }
     }
 

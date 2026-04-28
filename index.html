@@ -406,6 +406,31 @@
 
 
   <script>
+    const params = new URLSearchParams(window.location.search);
+const examName = params.get("exam");
+    if (examName) {
+  loadExam(examName);
+}
+
+async function loadExam(name) {
+  try {
+    // Bild laden
+    examImage.src = `exams/${name}/page1.png`;
+    examImage.classList.remove("hidden");
+    emptyHint.classList.add("hidden");
+
+    // config laden
+    const response = await fetch(`exams/${name}/config.json`);
+    const config = await response.json();
+
+    fields = config.fields || [];
+    renderFields();
+
+  } catch (e) {
+    alert("Prüfung konnte nicht geladen werden.");
+    console.error(e);
+  }
+}
     const page = document.getElementById('page');
     const examImage = document.getElementById('examImage');
     const emptyHint = document.getElementById('emptyHint');

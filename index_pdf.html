@@ -1,0 +1,780 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kermess Prüfungs-App – PDF-Version</title>
+  <style>
+    :root {
+      --bg: #f3f4f6;
+      --panel: #ffffff;
+      --ink: #111827;
+      --muted: #6b7280;
+      --border: #d1d5db;
+      --accent: #2563eb;
+      --danger: #dc2626;
+      --field: rgba(37, 99, 235, 0.13);
+      --field-border: #2563eb;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 14px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    header h1 {
+      font-size: 18px;
+      margin: 0 12px 0 0;
+      white-space: nowrap;
+    }
+
+    button, input[type="text"], input[type="file"] { font: inherit; }
+
+    button, .file-label {
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 10px;
+      padding: 8px 11px;
+      cursor: pointer;
+    }
+
+    button:hover, .file-label:hover { border-color: var(--accent); }
+
+    button.primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    button.danger {
+      background: #fff;
+      color: var(--danger);
+      border-color: #fecaca;
+    }
+
+    button.active {
+      outline: 3px solid rgba(37, 99, 235, 0.25);
+      border-color: var(--accent);
+    }
+
+    .spacer { flex: 1; }
+
+    main {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 14px;
+      padding: 14px;
+    }
+
+    aside {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      height: calc(100vh - 86px);
+      overflow: auto;
+      position: sticky;
+      top: 72px;
+    }
+
+    aside h2 {
+      font-size: 16px;
+      margin: 0 0 10px;
+    }
+
+    aside p, aside li {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    code {
+      background: #eef2ff;
+      padding: 2px 5px;
+      border-radius: 5px;
+      color: #1e3a8a;
+    }
+
+    .mode-box {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      margin: 12px 0;
+      background: #fafafa;
+    }
+
+    .mode-title {
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .tiny, .status {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .pages {
+      display: grid;
+      gap: 18px;
+      min-width: 0;
+    }
+
+    .page-wrap {
+      position: relative;
+      width: min(100%, 920px);
+      margin: 0 auto;
+      background: #fff;
+      border: 1px solid var(--border);
+      box-shadow: 0 12px 26px rgba(0,0,0,0.08);
+      user-select: none;
+    }
+
+    .page-label {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      z-index: 3;
+      background: rgba(17,24,39,0.75);
+      color: #fff;
+      border-radius: 999px;
+      padding: 3px 9px;
+      font-size: 12px;
+      pointer-events: none;
+    }
+
+    canvas.pdf-page {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .field-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+    }
+
+    .field {
+      position: absolute;
+      border: 2px solid var(--field-border);
+      background: var(--field);
+      min-width: 22px;
+      min-height: 22px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .field.selected {
+      outline: 3px solid rgba(220, 38, 38, 0.25);
+      border-color: var(--danger);
+    }
+
+    .field input[type="text"] {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: rgba(255,255,255,0.92);
+      padding: 4px 6px;
+      font-size: 16px;
+    }
+
+    .field textarea {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: rgba(255,255,255,0.92);
+      resize: none;
+      padding: 6px;
+      font-size: 16px;
+      font-family: inherit;
+    }
+
+    .field input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+    }
+
+    .field .label {
+      position: absolute;
+      left: 0;
+      top: -22px;
+      background: var(--accent);
+      color: #fff;
+      padding: 2px 6px;
+      border-radius: 6px 6px 0 0;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .resize-handle {
+      position: absolute;
+      right: -7px;
+      bottom: -7px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--danger);
+      cursor: nwse-resize;
+      display: none;
+    }
+
+    .field.selected .resize-handle { display: block; }
+
+    .student-mode header .editor-only,
+    .student-mode aside,
+    .student-mode .field .label,
+    .student-mode .resize-handle,
+    .student-mode .page-label {
+      display: none !important;
+    }
+
+    .student-mode main {
+      display: block;
+      padding: 12px;
+    }
+
+    .student-mode .field {
+      background: transparent;
+      border-color: transparent;
+    }
+
+    .student-mode .field input[type="text"],
+    .student-mode .field textarea {
+      border: 1px solid #9ca3af;
+      background: rgba(255,255,255,0.98);
+    }
+
+    dialog {
+      border: 0;
+      border-radius: 16px;
+      padding: 0;
+      width: min(92vw, 380px);
+      box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+    }
+
+    dialog::backdrop { background: rgba(0,0,0,0.35); }
+
+    .dialog-inner { padding: 18px; }
+
+    .dialog-inner h2 { margin: 0 0 10px; font-size: 18px; }
+
+    .field-choice {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .field-choice button {
+      text-align: left;
+      padding: 11px;
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .hidden { display: none !important; }
+
+    #loadingBox {
+      text-align: center;
+      padding: 40px 10px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 850px) {
+      main { grid-template-columns: 1fr; }
+      aside { position: static; height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Kermess Prüfungs-App PDF</h1>
+    <button id="editorModeBtn" class="editor-only active">Lehrkraft-Modus</button>
+    <button id="studentModeBtn">Schüler-Modus testen</button>
+    <span class="spacer"></span>
+    <label class="file-label editor-only">
+      PDF laden
+      <input id="pdfInput" type="file" accept="application/pdf,.pdf" hidden>
+    </label>
+    <button id="downloadConfigBtn" class="editor-only primary">Felder speichern</button>
+    <label class="file-label editor-only">
+      Felder laden
+      <input id="configInput" type="file" accept="application/json,.json" hidden>
+    </label>
+    <input id="studentNameInput" class="hidden" type="text" placeholder="Name / Kürzel" style="border:1px solid #d1d5db;border-radius:10px;padding:8px 11px;min-width:180px;">
+    <button id="downloadAnswersBtn" class="primary hidden">Abgabe bestätigen</button>
+  </header>
+
+  <main>
+    <aside>
+      <h2>So funktioniert es</h2>
+      <ol>
+        <li>PDF laden oder über <code>?exam=englisch_test</code> automatisch öffnen.</li>
+        <li>Auf die Stelle klicken, wo ein Feld hin soll.</li>
+        <li>Feldart auswählen.</li>
+        <li>Feld anklicken und unten rechts größer ziehen.</li>
+        <li>Mit „Felder speichern“ die Konfiguration herunterladen.</li>
+      </ol>
+
+      <div class="mode-box">
+        <div class="mode-title">Feld bearbeiten</div>
+        <p id="selectedInfo">Noch kein Feld ausgewählt.</p>
+        <div class="row">
+          <button id="deleteFieldBtn" class="danger">Ausgewähltes Feld löschen</button>
+        </div>
+      </div>
+
+      <div class="mode-box">
+        <div class="mode-title">GitHub-Struktur</div>
+        <p><code>exams/englisch_test/exam.pdf</code><br><code>exams/englisch_test/config.json</code></p>
+        <p>Dann öffnen mit:</p>
+        <p><code>index_pdf.html?exam=englisch_test</code></p>
+      </div>
+    </aside>
+
+    <section id="workspace" class="pages">
+      <div id="loadingBox">Bitte zuerst ein PDF laden oder eine Prüfung per URL öffnen.</div>
+    </section>
+  </main>
+
+  <dialog id="fieldDialog">
+    <div class="dialog-inner">
+      <h2>Welche Feldart?</h2>
+      <p class="tiny">Das Feld wird an der geklickten Stelle eingefügt.</p>
+      <div class="field-choice">
+        <button data-type="checkbox">☑ Ankreuzen</button>
+        <button data-type="short_text">▭ Kurzantwort</button>
+        <button data-type="gap_text">▭ Lücke</button>
+        <button data-type="long_text">▭ Freitext</button>
+      </div>
+      <p></p>
+      <button id="cancelDialogBtn">Abbrechen</button>
+    </div>
+  </dialog>
+
+  <script type="module">
+    import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.7.284/build/pdf.min.mjs';
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.7.284/build/pdf.worker.min.mjs';
+
+    const workspace = document.getElementById('workspace');
+    const loadingBox = document.getElementById('loadingBox');
+    const pdfInput = document.getElementById('pdfInput');
+    const configInput = document.getElementById('configInput');
+    const fieldDialog = document.getElementById('fieldDialog');
+    const cancelDialogBtn = document.getElementById('cancelDialogBtn');
+    const downloadConfigBtn = document.getElementById('downloadConfigBtn');
+    const downloadAnswersBtn = document.getElementById('downloadAnswersBtn');
+    const studentNameInput = document.getElementById('studentNameInput');
+    const editorModeBtn = document.getElementById('editorModeBtn');
+    const studentModeBtn = document.getElementById('studentModeBtn');
+    const deleteFieldBtn = document.getElementById('deleteFieldBtn');
+    const selectedInfo = document.getElementById('selectedInfo');
+
+    let fields = [];
+    let answers = {};
+    let pendingClick = null;
+    let selectedId = null;
+    let mode = 'editor';
+    let pdfFileName = 'exam.pdf';
+    let currentExamName = 'pruefung';
+    let nextId = 1;
+    let resizing = null;
+    let pdfDoc = null;
+    let pageCount = 0;
+
+    const defaultSizes = {
+      checkbox: { width: 28, height: 28 },
+      short_text: { width: 160, height: 32 },
+      gap_text: { width: 120, height: 28 },
+      long_text: { width: 260, height: 120 }
+    };
+
+    function uid() {
+      return 'feld_' + (nextId++);
+    }
+
+    function setMode(newMode) {
+      mode = newMode;
+      document.body.classList.toggle('student-mode', mode === 'student');
+      editorModeBtn.classList.toggle('active', mode === 'editor');
+      studentModeBtn.classList.toggle('active', mode === 'student');
+      downloadAnswersBtn.classList.toggle('hidden', mode !== 'student');
+      studentNameInput.classList.toggle('hidden', mode !== 'student');
+      selectedId = null;
+      renderAllFields();
+      updateSelectedInfo();
+    }
+
+    editorModeBtn.addEventListener('click', () => setMode('editor'));
+    studentModeBtn.addEventListener('click', () => setMode('student'));
+
+    pdfInput.addEventListener('change', async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      pdfFileName = file.name;
+      currentExamName = file.name.replace(/\.pdf$/i, '') || 'pruefung';
+      const arrayBuffer = await file.arrayBuffer();
+      await loadPdfFromData(arrayBuffer);
+    });
+
+    async function loadPdfFromData(data) {
+      workspace.innerHTML = '<div id="loadingBox">PDF wird geladen …</div>';
+      pdfDoc = await pdfjsLib.getDocument({ data }).promise;
+      pageCount = pdfDoc.numPages;
+      await renderPdfPages();
+      renderAllFields();
+    }
+
+    async function loadPdfFromUrl(url) {
+      workspace.innerHTML = '<div id="loadingBox">PDF wird geladen …</div>';
+      pdfDoc = await pdfjsLib.getDocument(url).promise;
+      pageCount = pdfDoc.numPages;
+      await renderPdfPages();
+      renderAllFields();
+    }
+
+    async function renderPdfPages() {
+      workspace.innerHTML = '';
+      for (let pageNumber = 1; pageNumber <= pageCount; pageNumber++) {
+        const pdfPage = await pdfDoc.getPage(pageNumber);
+        const baseViewport = pdfPage.getViewport({ scale: 1 });
+        const targetWidth = 920;
+        const scale = targetWidth / baseViewport.width;
+        const viewport = pdfPage.getViewport({ scale });
+
+        const wrap = document.createElement('div');
+        wrap.className = 'page-wrap';
+        wrap.dataset.page = String(pageNumber);
+
+        const label = document.createElement('div');
+        label.className = 'page-label';
+        label.textContent = 'Seite ' + pageNumber;
+        wrap.appendChild(label);
+
+        const canvas = document.createElement('canvas');
+        canvas.className = 'pdf-page';
+        canvas.width = Math.floor(viewport.width);
+        canvas.height = Math.floor(viewport.height);
+        wrap.appendChild(canvas);
+
+        const layer = document.createElement('div');
+        layer.className = 'field-layer';
+        layer.dataset.page = String(pageNumber);
+        wrap.appendChild(layer);
+
+        layer.addEventListener('click', (event) => {
+          if (mode !== 'editor') return;
+          if (event.target.closest('.field')) return;
+
+          const rect = layer.getBoundingClientRect();
+          pendingClick = {
+            page: pageNumber,
+            x: (event.clientX - rect.left) / rect.width,
+            y: (event.clientY - rect.top) / rect.height
+          };
+          fieldDialog.showModal();
+        });
+
+        workspace.appendChild(wrap);
+
+        const context = canvas.getContext('2d');
+        await pdfPage.render({ canvasContext: context, viewport }).promise;
+      }
+    }
+
+    fieldDialog.querySelectorAll('button[data-type]').forEach(button => {
+      button.addEventListener('click', () => {
+        if (!pendingClick) return;
+        const type = button.dataset.type;
+        const size = defaultSizes[type];
+        const layer = document.querySelector('.field-layer[data-page="' + pendingClick.page + '"]');
+        const rect = layer.getBoundingClientRect();
+
+        const field = {
+          id: uid(),
+          type,
+          page: pendingClick.page,
+          x: pendingClick.x,
+          y: pendingClick.y,
+          width: size.width / rect.width,
+          height: size.height / rect.height,
+          label: ''
+        };
+
+        fields.push(field);
+        pendingClick = null;
+        fieldDialog.close();
+        selectedId = field.id;
+        renderAllFields();
+        updateSelectedInfo();
+      });
+    });
+
+    cancelDialogBtn.addEventListener('click', () => {
+      pendingClick = null;
+      fieldDialog.close();
+    });
+
+    function renderAllFields() {
+      document.querySelectorAll('.field-layer').forEach(layer => {
+        layer.querySelectorAll('.field').forEach(el => el.remove());
+      });
+
+      fields.forEach((field, index) => {
+        const layer = document.querySelector('.field-layer[data-page="' + field.page + '"]');
+        if (!layer) return;
+
+        const el = document.createElement('div');
+        el.className = 'field';
+        el.dataset.id = field.id;
+        if (field.id === selectedId) el.classList.add('selected');
+        el.style.left = (field.x * 100) + '%';
+        el.style.top = (field.y * 100) + '%';
+        el.style.width = (field.width * 100) + '%';
+        el.style.height = (field.height * 100) + '%';
+
+        const label = document.createElement('div');
+        label.className = 'label';
+        label.textContent = field.label || `${index + 1}: ${labelForType(field.type)}`;
+        el.appendChild(label);
+
+        if (field.type === 'checkbox') {
+          const input = document.createElement('input');
+          input.type = 'checkbox';
+          input.checked = Boolean(answers[field.id]);
+          input.disabled = mode === 'editor';
+          input.addEventListener('change', () => answers[field.id] = input.checked);
+          el.appendChild(input);
+        }
+
+        if (field.type === 'short_text' || field.type === 'gap_text') {
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.value = answers[field.id] || '';
+          input.readOnly = mode === 'editor';
+          input.addEventListener('input', () => answers[field.id] = input.value);
+          el.appendChild(input);
+        }
+
+        if (field.type === 'long_text') {
+          const textarea = document.createElement('textarea');
+          textarea.value = answers[field.id] || '';
+          textarea.readOnly = mode === 'editor';
+          textarea.addEventListener('input', () => answers[field.id] = textarea.value);
+          el.appendChild(textarea);
+        }
+
+        const handle = document.createElement('div');
+        handle.className = 'resize-handle';
+        handle.addEventListener('mousedown', (event) => {
+          if (mode !== 'editor') return;
+          event.preventDefault();
+          event.stopPropagation();
+          const layerRect = layer.getBoundingClientRect();
+          resizing = {
+            id: field.id,
+            startX: event.clientX,
+            startY: event.clientY,
+            startW: field.width,
+            startH: field.height,
+            layerW: layerRect.width,
+            layerH: layerRect.height
+          };
+        });
+        el.appendChild(handle);
+
+        el.addEventListener('click', (event) => {
+          if (mode !== 'editor') return;
+          event.stopPropagation();
+          selectedId = field.id;
+          renderAllFields();
+          updateSelectedInfo();
+        });
+
+        layer.appendChild(el);
+      });
+    }
+
+    function labelForType(type) {
+      return {
+        checkbox: 'Ankreuzen',
+        short_text: 'Kurzantwort',
+        gap_text: 'Lücke',
+        long_text: 'Freitext'
+      }[type] || type;
+    }
+
+    function updateSelectedInfo() {
+      const field = fields.find(f => f.id === selectedId);
+      if (!field) {
+        selectedInfo.textContent = 'Noch kein Feld ausgewählt.';
+        return;
+      }
+      selectedInfo.textContent = `Ausgewählt: ${labelForType(field.type)} auf Seite ${field.page} (${field.id})`;
+    }
+
+    window.addEventListener('mousemove', (event) => {
+      if (!resizing) return;
+      const field = fields.find(f => f.id === resizing.id);
+      if (!field) return;
+      const dx = (event.clientX - resizing.startX) / resizing.layerW;
+      const dy = (event.clientY - resizing.startY) / resizing.layerH;
+      field.width = Math.max(0.02, resizing.startW + dx);
+      field.height = Math.max(0.02, resizing.startH + dy);
+      renderAllFields();
+    });
+
+    window.addEventListener('mouseup', () => {
+      resizing = null;
+    });
+
+    deleteFieldBtn.addEventListener('click', () => {
+      if (!selectedId) return;
+      fields = fields.filter(f => f.id !== selectedId);
+      delete answers[selectedId];
+      selectedId = null;
+      renderAllFields();
+      updateSelectedInfo();
+    });
+
+    downloadConfigBtn.addEventListener('click', () => {
+      const config = {
+        app: 'kermess-exam-pdf-click-editor',
+        version: 2,
+        pdf: pdfFileName || 'exam.pdf',
+        pages: pageCount,
+        fields
+      };
+      downloadJson(config, 'config.json');
+    });
+
+    configInput.addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const config = JSON.parse(reader.result);
+          fields = Array.isArray(config.fields) ? config.fields : [];
+          selectedId = null;
+          nextId = fields.length + 1;
+          renderAllFields();
+          updateSelectedInfo();
+        } catch (error) {
+          alert('Die JSON-Datei konnte nicht gelesen werden.');
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    downloadAnswersBtn.addEventListener('click', () => {
+      const studentName = studentNameInput.value.trim();
+
+      if (!studentName) {
+        alert('Bitte zuerst Name oder Kürzel eintragen.');
+        studentNameInput.focus();
+        return;
+      }
+
+      const confirmed = confirm('Abgabe wirklich bestätigen? Danach wird die Antwortdatei heruntergeladen.');
+      if (!confirmed) return;
+
+      const result = {
+        app: 'kermess-exam-pdf-click-editor',
+        version: 2,
+        exam: currentExamName,
+        studentName,
+        createdAt: new Date().toISOString(),
+        answers
+      };
+
+      const safeExam = safeFilePart(currentExamName);
+      const safeName = safeFilePart(studentName);
+      downloadJson(result, safeExam + '_' + safeName + '_antworten.json');
+
+      alert('Abgabe gespeichert. Die Antwortdatei wurde heruntergeladen.');
+    });
+
+    function safeFilePart(text) {
+      return String(text || '')
+        .trim()
+        .replace(/ä/g, 'ae')
+        .replace(/ö/g, 'oe')
+        .replace(/ü/g, 'ue')
+        .replace(/Ä/g, 'Ae')
+        .replace(/Ö/g, 'Oe')
+        .replace(/Ü/g, 'Ue')
+        .replace(/ß/g, 'ss')
+        .replace(/[^a-zA-Z0-9_-]+/g, '_')
+        .replace(/^_+|_+$/g, '') || 'ohne_name';
+    }
+
+    function downloadJson(data, filename) {
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    async function loadExamFromGithubPages() {
+      const params = new URLSearchParams(window.location.search);
+      const examName = params.get('exam');
+      if (!examName) return;
+
+      currentExamName = examName;
+      pdfFileName = 'exam.pdf';
+
+      try {
+        await loadPdfFromUrl('exams/' + examName + '/exam.pdf');
+
+        const response = await fetch('exams/' + examName + '/config.json', { cache: 'no-store' });
+        if (!response.ok) {
+          throw new Error('config.json nicht gefunden oder nicht lesbar.');
+        }
+
+        const config = await response.json();
+        fields = Array.isArray(config.fields) ? config.fields : [];
+        nextId = fields.length + 1;
+        selectedId = null;
+        renderAllFields();
+        updateSelectedInfo();
+      } catch (error) {
+        console.error(error);
+        alert('Prüfung konnte nicht geladen werden. Prüfe: exams/' + examName + '/exam.pdf und config.json');
+      }
+    }
+
+    window.addEventListener('resize', renderAllFields);
+    window.addEventListener('load', loadExamFromGithubPages);
+  </script>
+</body>
+</html>

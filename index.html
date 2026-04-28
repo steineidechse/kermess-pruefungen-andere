@@ -295,7 +295,8 @@
       Felder laden
       <input id="configInput" type="file" accept="application/json,.json" hidden>
     </label>
-    <button id="downloadAnswersBtn" class="primary hidden">Antworten herunterladen</button>
+    <input id="studentNameInput" class="hidden" type="text" placeholder="Name / Kürzel" style="border:1px solid #d1d5db;border-radius:10px;padding:8px 11px;min-width:180px;">
+    <button id="downloadAnswersBtn" class="primary hidden">Abgabe bestätigen</button>
   </header>
 
   <main>
@@ -359,6 +360,7 @@
     const cancelDialogBtn = document.getElementById('cancelDialogBtn');
     const downloadConfigBtn = document.getElementById('downloadConfigBtn');
     const downloadAnswersBtn = document.getElementById('downloadAnswersBtn');
+    const studentNameInput = document.getElementById('studentNameInput');
     const editorModeBtn = document.getElementById('editorModeBtn');
     const studentModeBtn = document.getElementById('studentModeBtn');
     const deleteFieldBtn = document.getElementById('deleteFieldBtn');
@@ -370,6 +372,7 @@
     let selectedId = null;
     let mode = 'editor';
     let imageFileName = '';
+    let currentExamName = 'pruefung';
     let nextId = 1;
     let resizing = null;
 
@@ -390,6 +393,7 @@
       editorModeBtn.classList.toggle('active', mode === 'editor');
       studentModeBtn.classList.toggle('active', mode === 'student');
       downloadAnswersBtn.classList.toggle('hidden', mode !== 'student');
+      studentNameInput.classList.toggle('hidden', mode !== 'student');
       selectedId = null;
       renderFields();
       updateSelectedInfo();
@@ -603,14 +607,46 @@
     });
 
     downloadAnswersBtn.addEventListener('click', () => {
+      const studentName = studentNameInput.value.trim();
+
+      if (!studentName) {
+        alert('Bitte zuerst Name oder Kürzel eintragen.');
+        studentNameInput.focus();
+        return;
+      }
+
+      const confirmed = confirm('Abgabe wirklich bestätigen? Danach wird die Antwortdatei heruntergeladen.');
+      if (!confirmed) return;
+
       const result = {
         app: 'kermess-exam-click-editor',
         version: 1,
+        exam: currentExamName,
+        studentName,
         createdAt: new Date().toISOString(),
         answers
       };
-      downloadJson(result, 'antworten.json');
+
+      const safeExam = safeFilePart(currentExamName);
+      const safeName = safeFilePart(studentName);
+      downloadJson(result, safeExam + '_' + safeName + '_antworten.json');
+
+      alert('Abgabe gespeichert. Die Antwortdatei wurde heruntergeladen.');
     });
+
+    function safeFilePart(text) {
+      return String(text || '')
+        .trim()
+        .replace(/ä/g, 'ae')
+        .replace(/ö/g, 'oe')
+        .replace(/ü/g, 'ue')
+        .replace(/Ä/g, 'Ae')
+        .replace(/Ö/g, 'Oe')
+        .replace(/Ü/g, 'Ue')
+        .replace(/ß/g, 'ss')
+        .replace(/[^a-zA-Z0-9_-]+/g, '_')
+        .replace(/^_+|_+$/g, '') || 'ohne_name';
+    }
 
     function downloadJson(data, filename) {
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -628,6 +664,7 @@
       const params = new URLSearchParams(window.location.search);
       const examName = params.get('exam');
       if (!examName) return;
+      currentExamName = examName;
 
       try {
         examImage.onload = () => {

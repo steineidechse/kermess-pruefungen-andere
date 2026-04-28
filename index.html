@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="de">
 <head>
   <meta charset="utf-8" />
@@ -13,14 +13,11 @@
       --border: #d1d5db;
       --accent: #2563eb;
       --danger: #dc2626;
-      --ok: #16a34a;
       --field: rgba(37, 99, 235, 0.13);
       --field-border: #2563eb;
     }
 
-
     * { box-sizing: border-box; }
-
 
     body {
       margin: 0;
@@ -28,7 +25,6 @@
       background: var(--bg);
       color: var(--ink);
     }
-
 
     header {
       position: sticky;
@@ -43,18 +39,13 @@
       flex-wrap: wrap;
     }
 
-
     header h1 {
       font-size: 18px;
       margin: 0 12px 0 0;
       white-space: nowrap;
     }
 
-
-    button, select, input[type="text"], input[type="file"] {
-      font: inherit;
-    }
-
+    button, input[type="text"], input[type="file"] { font: inherit; }
 
     button, .file-label {
       border: 1px solid var(--border);
@@ -64,9 +55,7 @@
       cursor: pointer;
     }
 
-
     button:hover, .file-label:hover { border-color: var(--accent); }
-
 
     button.primary {
       background: var(--accent);
@@ -74,22 +63,18 @@
       border-color: var(--accent);
     }
 
-
     button.danger {
       background: #fff;
       color: var(--danger);
       border-color: #fecaca;
     }
 
-
     button.active {
       outline: 3px solid rgba(37, 99, 235, 0.25);
       border-color: var(--accent);
     }
 
-
     .spacer { flex: 1; }
-
 
     main {
       display: grid;
@@ -97,7 +82,6 @@
       gap: 14px;
       padding: 14px;
     }
-
 
     aside {
       background: var(--panel);
@@ -110,19 +94,16 @@
       top: 72px;
     }
 
-
     aside h2 {
       font-size: 16px;
       margin: 0 0 10px;
     }
-
 
     aside p, aside li {
       color: var(--muted);
       font-size: 14px;
       line-height: 1.35;
     }
-
 
     .mode-box {
       border: 1px solid var(--border);
@@ -132,23 +113,15 @@
       background: #fafafa;
     }
 
-
     .mode-title {
       font-weight: 700;
       margin-bottom: 8px;
     }
 
-
     .tiny {
       font-size: 12px;
       color: var(--muted);
     }
-
-
-    #workspace {
-      min-width: 0;
-    }
-
 
     .page {
       position: relative;
@@ -158,8 +131,8 @@
       border: 1px solid var(--border);
       box-shadow: 0 12px 26px rgba(0,0,0,0.08);
       user-select: none;
+      min-height: 300px;
     }
-
 
     .page img {
       display: block;
@@ -167,7 +140,6 @@
       height: auto;
       pointer-events: none;
     }
-
 
     .field {
       position: absolute;
@@ -181,12 +153,10 @@
       justify-content: center;
     }
 
-
     .field.selected {
       outline: 3px solid rgba(220, 38, 38, 0.25);
       border-color: var(--danger);
     }
-
 
     .field input[type="text"] {
       width: 100%;
@@ -196,7 +166,6 @@
       padding: 4px 6px;
       font-size: 16px;
     }
-
 
     .field textarea {
       width: 100%;
@@ -209,13 +178,11 @@
       font-family: inherit;
     }
 
-
     .field input[type="checkbox"] {
       width: 18px;
       height: 18px;
       margin: 0;
     }
-
 
     .field .label {
       position: absolute;
@@ -229,7 +196,6 @@
       white-space: nowrap;
     }
 
-
     .resize-handle {
       position: absolute;
       right: -7px;
@@ -242,9 +208,7 @@
       display: none;
     }
 
-
     .field.selected .resize-handle { display: block; }
-
 
     .student-mode header .editor-only,
     .student-mode aside,
@@ -253,30 +217,23 @@
       display: none !important;
     }
 
-
     .student-mode main {
       display: block;
       padding: 12px;
     }
 
-
-    .student-mode .page {
-      max-width: 920px;
-    }
-
+    .student-mode .page { max-width: 920px; }
 
     .student-mode .field {
       background: transparent;
       border-color: transparent;
     }
 
-
     .student-mode .field input[type="text"],
     .student-mode .field textarea {
       border: 1px solid #9ca3af;
       background: rgba(255,255,255,0.98);
     }
-
 
     dialog {
       border: 0;
@@ -286,15 +243,11 @@
       box-shadow: 0 25px 60px rgba(0,0,0,0.25);
     }
 
-
     dialog::backdrop { background: rgba(0,0,0,0.35); }
-
 
     .dialog-inner { padding: 18px; }
 
-
     .dialog-inner h2 { margin: 0 0 10px; font-size: 18px; }
-
 
     .field-choice {
       display: grid;
@@ -302,12 +255,10 @@
       margin-top: 12px;
     }
 
-
     .field-choice button {
       text-align: left;
       padding: 11px;
     }
-
 
     .row {
       display: flex;
@@ -316,15 +267,12 @@
       flex-wrap: wrap;
     }
 
-
     .hidden { display: none !important; }
-
 
     .status {
       color: var(--muted);
       font-size: 13px;
     }
-
 
     @media (max-width: 850px) {
       main { grid-template-columns: 1fr; }
@@ -350,18 +298,16 @@
     <button id="downloadAnswersBtn" class="primary hidden">Antworten herunterladen</button>
   </header>
 
-
   <main>
     <aside>
       <h2>So funktioniert es</h2>
       <ol>
-        <li>Prüfungsseite als Bild laden.</li>
+        <li>Prüfungsseite als Bild laden oder über <code>?exam=englisch_test</code> automatisch laden.</li>
         <li>Auf die Stelle klicken, wo ein Feld hin soll.</li>
         <li>Feldart auswählen.</li>
         <li>Feld bei Bedarf anklicken und größer ziehen.</li>
         <li>Mit „Felder speichern“ die Konfiguration herunterladen.</li>
       </ol>
-
 
       <div class="mode-box">
         <div class="mode-title">Feld bearbeiten</div>
@@ -371,23 +317,22 @@
         </div>
       </div>
 
-
       <div class="mode-box">
-        <div class="mode-title">Hinweis</div>
-        <p>Für GitHub Pages werden später Prüfungsbilder und gespeicherte Feld-Datei zusammen ins Repository gelegt.</p>
-        <p class="tiny">Diese Testversion speichert nichts automatisch auf GitHub. Sie lädt Dateien herunter.</p>
+        <div class="mode-title">GitHub-Test</div>
+        <p>Wenn dein Ordner so heißt:</p>
+        <p><code>exams/englisch_test/page1.png</code><br><code>exams/englisch_test/config.json</code></p>
+        <p>Dann öffne:</p>
+        <p><code>index.html?exam=englisch_test</code></p>
       </div>
     </aside>
-
 
     <section id="workspace">
       <div id="page" class="page">
         <img id="examImage" alt="Prüfungsseite" src="" class="hidden">
       </div>
-      <p id="emptyHint" class="status" style="text-align:center;">Bitte zuerst eine Prüfungsseite als PNG/JPG laden.</p>
+      <p id="emptyHint" class="status" style="text-align:center;">Bitte zuerst eine Prüfungsseite als PNG/JPG laden oder eine Prüfung per URL öffnen.</p>
     </section>
   </main>
-
 
   <dialog id="fieldDialog">
     <div class="dialog-inner">
@@ -404,33 +349,7 @@
     </div>
   </dialog>
 
-
   <script>
-    const params = new URLSearchParams(window.location.search);
-const examName = params.get("exam");
-    if (examName) {
-  loadExam(examName);
-}
-
-async function loadExam(name) {
-  try {
-    // Bild laden
-    examImage.src = `exams/${name}/page1.png`;
-    examImage.classList.remove("hidden");
-    emptyHint.classList.add("hidden");
-
-    // config laden
-    const response = await fetch(`exams/${name}/config.json`);
-    const config = await response.json();
-
-    fields = config.fields || [];
-    renderFields();
-
-  } catch (e) {
-    alert("Prüfung konnte nicht geladen werden.");
-    console.error(e);
-  }
-}
     const page = document.getElementById('page');
     const examImage = document.getElementById('examImage');
     const emptyHint = document.getElementById('emptyHint');
@@ -445,7 +364,6 @@ async function loadExam(name) {
     const deleteFieldBtn = document.getElementById('deleteFieldBtn');
     const selectedInfo = document.getElementById('selectedInfo');
 
-
     let fields = [];
     let answers = {};
     let pendingClick = null;
@@ -455,7 +373,6 @@ async function loadExam(name) {
     let nextId = 1;
     let resizing = null;
 
-
     const defaultSizes = {
       checkbox: { width: 28, height: 28 },
       short_text: { width: 160, height: 32 },
@@ -463,11 +380,9 @@ async function loadExam(name) {
       long_text: { width: 260, height: 120 }
     };
 
-
     function uid() {
       return 'feld_' + (nextId++);
     }
-
 
     function setMode(newMode) {
       mode = newMode;
@@ -480,10 +395,8 @@ async function loadExam(name) {
       updateSelectedInfo();
     }
 
-
     editorModeBtn.addEventListener('click', () => setMode('editor'));
     studentModeBtn.addEventListener('click', () => setMode('student'));
-
 
     imageInput.addEventListener('change', (event) => {
       const file = event.target.files[0];
@@ -494,16 +407,15 @@ async function loadExam(name) {
         examImage.src = reader.result;
         examImage.classList.remove('hidden');
         emptyHint.classList.add('hidden');
+        renderFields();
       };
       reader.readAsDataURL(file);
     });
-
 
     page.addEventListener('click', (event) => {
       if (mode !== 'editor') return;
       if (event.target.closest('.field')) return;
       if (!examImage.src) return;
-
 
       const rect = page.getBoundingClientRect();
       pendingClick = {
@@ -513,14 +425,12 @@ async function loadExam(name) {
       fieldDialog.showModal();
     });
 
-
     fieldDialog.querySelectorAll('button[data-type]').forEach(button => {
       button.addEventListener('click', () => {
         if (!pendingClick) return;
         const type = button.dataset.type;
         const size = defaultSizes[type];
         const rect = page.getBoundingClientRect();
-
 
         const field = {
           id: uid(),
@@ -541,17 +451,13 @@ async function loadExam(name) {
       });
     });
 
-
     cancelDialogBtn.addEventListener('click', () => {
       pendingClick = null;
       fieldDialog.close();
     });
 
-
     function renderFields() {
       page.querySelectorAll('.field').forEach(el => el.remove());
-      const rect = page.getBoundingClientRect();
-
 
       fields.forEach((field, index) => {
         const el = document.createElement('div');
@@ -563,12 +469,10 @@ async function loadExam(name) {
         el.style.width = (field.width * 100) + '%';
         el.style.height = (field.height * 100) + '%';
 
-
         const label = document.createElement('div');
         label.className = 'label';
         label.textContent = field.label || `${index + 1}: ${labelForType(field.type)}`;
         el.appendChild(label);
-
 
         if (field.type === 'checkbox') {
           const input = document.createElement('input');
@@ -579,7 +483,6 @@ async function loadExam(name) {
           el.appendChild(input);
         }
 
-
         if (field.type === 'short_text' || field.type === 'gap_text') {
           const input = document.createElement('input');
           input.type = 'text';
@@ -589,7 +492,6 @@ async function loadExam(name) {
           el.appendChild(input);
         }
 
-
         if (field.type === 'long_text') {
           const textarea = document.createElement('textarea');
           textarea.value = answers[field.id] || '';
@@ -598,12 +500,13 @@ async function loadExam(name) {
           el.appendChild(textarea);
         }
 
-
         const handle = document.createElement('div');
         handle.className = 'resize-handle';
         handle.addEventListener('mousedown', (event) => {
+          if (mode !== 'editor') return;
           event.preventDefault();
           event.stopPropagation();
+          const rect = page.getBoundingClientRect();
           resizing = {
             id: field.id,
             startX: event.clientX,
@@ -616,7 +519,6 @@ async function loadExam(name) {
         });
         el.appendChild(handle);
 
-
         el.addEventListener('click', (event) => {
           if (mode !== 'editor') return;
           event.stopPropagation();
@@ -625,11 +527,9 @@ async function loadExam(name) {
           updateSelectedInfo();
         });
 
-
         page.appendChild(el);
       });
     }
-
 
     function labelForType(type) {
       return {
@@ -640,7 +540,6 @@ async function loadExam(name) {
       }[type] || type;
     }
 
-
     function updateSelectedInfo() {
       const field = fields.find(f => f.id === selectedId);
       if (!field) {
@@ -649,7 +548,6 @@ async function loadExam(name) {
       }
       selectedInfo.textContent = `Ausgewählt: ${labelForType(field.type)} (${field.id})`;
     }
-
 
     window.addEventListener('mousemove', (event) => {
       if (!resizing) return;
@@ -662,11 +560,9 @@ async function loadExam(name) {
       renderFields();
     });
 
-
     window.addEventListener('mouseup', () => {
       resizing = null;
     });
-
 
     deleteFieldBtn.addEventListener('click', () => {
       if (!selectedId) return;
@@ -677,17 +573,15 @@ async function loadExam(name) {
       updateSelectedInfo();
     });
 
-
     downloadConfigBtn.addEventListener('click', () => {
       const config = {
         app: 'kermess-exam-click-editor',
         version: 1,
-        image: imageFileName,
+        image: imageFileName || 'page1.png',
         fields
       };
       downloadJson(config, 'config.json');
     });
-
 
     configInput.addEventListener('change', (event) => {
       const file = event.target.files[0];
@@ -708,7 +602,6 @@ async function loadExam(name) {
       reader.readAsText(file);
     });
 
-
     downloadAnswersBtn.addEventListener('click', () => {
       const result = {
         app: 'kermess-exam-click-editor',
@@ -718,7 +611,6 @@ async function loadExam(name) {
       };
       downloadJson(result, 'antworten.json');
     });
-
 
     function downloadJson(data, filename) {
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -732,8 +624,44 @@ async function loadExam(name) {
       URL.revokeObjectURL(url);
     }
 
+    async function loadExamFromGithubPages() {
+      const params = new URLSearchParams(window.location.search);
+      const examName = params.get('exam');
+      if (!examName) return;
+
+      try {
+        examImage.onload = () => {
+          examImage.classList.remove('hidden');
+          emptyHint.classList.add('hidden');
+          renderFields();
+        };
+
+        examImage.onerror = () => {
+          alert('Das Prüfungsbild konnte nicht geladen werden. Prüfe: exams/' + examName + '/page1.png');
+        };
+
+        examImage.src = 'exams/' + examName + '/page1.png';
+        imageFileName = 'page1.png';
+
+        const response = await fetch('exams/' + examName + '/config.json', { cache: 'no-store' });
+        if (!response.ok) {
+          throw new Error('config.json nicht gefunden oder nicht lesbar.');
+        }
+
+        const config = await response.json();
+        fields = Array.isArray(config.fields) ? config.fields : [];
+        nextId = fields.length + 1;
+        selectedId = null;
+        renderFields();
+        updateSelectedInfo();
+      } catch (error) {
+        console.error(error);
+        alert('Prüfung konnte nicht geladen werden. Prüfe Ordnername, page1.png und config.json.');
+      }
+    }
 
     window.addEventListener('resize', renderFields);
+    window.addEventListener('load', loadExamFromGithubPages);
   </script>
 </body>
 </html>
